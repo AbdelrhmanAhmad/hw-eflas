@@ -1,5 +1,5 @@
 import Anthropic from "@anthropic-ai/sdk";
-import { getOptionalSession } from "@/lib/dal";
+import { getOptionalUser } from "@/lib/dal";
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
@@ -13,9 +13,12 @@ const SYSTEM_PROMPT = `أنت محامٍ قانوني متخصص في صياغة
 - الرد يكون النص القانوني المطلوب فقط، بدون مقدمات أو تفسيرات`;
 
 export async function POST(request: Request) {
-  const session = await getOptionalSession();
-  if (!session) {
+  const user = await getOptionalUser();
+  if (!user) {
     return Response.json({ error: "يجب تسجيل الدخول" }, { status: 401 });
+  }
+  if (user.role !== "admin") {
+    return Response.json({ error: "غير مصرح" }, { status: 403 });
   }
 
   try {

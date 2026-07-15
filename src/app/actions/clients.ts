@@ -6,7 +6,7 @@ import { prisma } from "@/lib/db";
 import { requireAdmin } from "@/lib/dal";
 
 const NameSchema = z.string().trim().min(2, { error: "الاسم يجب أن يكون حرفين على الأقل" });
-const EmailSchema = z.email({ error: "الرجاء إدخال بريد إلكتروني صحيح" }).trim();
+const EmailSchema = z.email({ error: "الرجاء إدخال بريد إلكتروني صحيح" }).trim().toLowerCase();
 const PasswordSchema = z
   .string()
   .min(8, { error: "كلمة المرور يجب أن تكون 8 أحرف على الأقل" })

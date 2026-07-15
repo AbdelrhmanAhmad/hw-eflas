@@ -180,6 +180,11 @@ export default function CaseWorkspace({ initialCases, userName }: { initialCases
   const [aiDraftedText, setAiDraftedText] = useState("");
   const [isAiDrafting, setIsAiDrafting] = useState(false);
   const [isAiDiagnosing, setIsAiDiagnosing] = useState(false);
+  const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "saved" | "error">("idle");
+  // UI-only: shows the "start analysis" panel over an existing diagnosis
+  // without touching activeCase.aiDiagnosis, so a failed re-analysis never
+  // destroys the last successful one.
+  const [isRequestingNewDiagnosis, setIsRequestingNewDiagnosis] = useState(false);
   const [wizardNotes, setWizardNotes] = useState("");
   const [deficiencies, setDeficiencies] = useState<{ id: string; type: "critical" | "warning"; text: string }[]>([]);
   const [completenessScore, setCompletenessScore] = useState(25);
@@ -244,13 +249,32 @@ export default function CaseWorkspace({ initialCases, userName }: { initialCases
     if (!current) return;
 
     const timeout = setTimeout(() => {
-      saveCaseAction(current).then(res => {
-        if (res?.error) showToast(res.error, "error");
-      });
+      setSaveStatus("saving");
+      saveCaseAction(current)
+        .then(res => {
+          if (res?.error) {
+            setSaveStatus("error");
+            showToast(res.error, "error");
+            return;
+          }
+          setSaveStatus("saved");
+        })
+        .catch(() => {
+          setSaveStatus("error");
+          showToast("تعذر حفظ التعديلات — تحقق من الاتصال وحاول مجدداً", "error");
+        });
     }, 800);
 
     return () => clearTimeout(timeout);
   }, [cases, activeCaseId, showToast]);
+
+  // Auto-dismiss the "saved" badge after a moment; leave "error" visible
+  // until the next save attempt actually resolves it.
+  useEffect(() => {
+    if (saveStatus !== "saved") return;
+    const t = setTimeout(() => setSaveStatus("idle"), 2500);
+    return () => clearTimeout(t);
+  }, [saveStatus]);
 
   // ── Active case derived
   const activeCase = cases.find(c => c.id === activeCaseId) ?? null;
@@ -871,6 +895,18 @@ export default function CaseWorkspace({ initialCases, userName }: { initialCases
               <h2 style={{ fontSize: "1.15rem", fontWeight: 800, color: "var(--text-heading)" }}>{activeCase.debtorName || "ملف جديد"}</h2>
               {activeCase.crNumber && <span className="chip">س.ت: {activeCase.crNumber}</span>}
               {activeCase.caseNumber && <span className="badge badge-green">رقم الدعوى: {activeCase.caseNumber}</span>}
+              {saveStatus === "saving" && (
+                <span style={{ display: "flex", alignItems: "center", gap: "5px", fontSize: "0.7rem", color: "var(--text-muted)" }}>
+                  <span style={{ width: "10px", height: "10px", border: "2px solid var(--text-muted)", borderTopColor: "transparent", borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
+                  جارِ الحفظ...
+                </span>
+              )}
+              {saveStatus === "saved" && (
+                <span style={{ fontSize: "0.7rem", color: "var(--green-600)", fontWeight: 600 }}>✓ تم الحفظ</span>
+              )}
+              {saveStatus === "error" && (
+                <span style={{ fontSize: "0.7rem", color: "var(--red)", fontWeight: 600 }}>⚠ فشل الحفظ — سيُعاد المحاولة مع أي تعديل جديد</span>
+              )}
             </div>
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
@@ -1305,7 +1341,7 @@ export default function CaseWorkspace({ initialCases, userName }: { initialCases
                       <p style={{ fontSize: "0.82rem", fontWeight: 700, color: "var(--text-body)" }}>تحليل Claude الذكي المتعمق</p>
                     </div>
 
-                    {!activeCase.aiDiagnosis && !isAiDiagnosing && (
+                    {(!activeCase.aiDiagnosis || isRequestingNewDiagnosis) && !isAiDiagnosing && (
                       <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
                         <div>
                           <p style={{ fontSize: "0.75rem", fontWeight: 600, color: "var(--text-secondary)", marginBottom: "5px" }}>ملاحظات أو معلومات إضافية (اختياري)</p>
@@ -1324,7 +1360,6 @@ export default function CaseWorkspace({ initialCases, userName }: { initialCases
                             style={{ padding: "7px 14px", fontSize: "0.78rem" }}
                             onClick={async () => {
                               setIsAiDiagnosing(true);
-                              updateCase({ aiDiagnosis: "", aiDiagnosisAt: "", aiDiagnosisSignature: "", aiDiagnosisConsistencyWarning: false });
                               try {
                                 const res = await fetch("/api/diagnose", {
                                   method: "POST",
@@ -1333,8 +1368,12 @@ export default function CaseWorkspace({ initialCases, userName }: { initialCases
                                 });
                                 const data = await res.json();
                                 if (data.error) throw new Error(data.error);
+                                // Only overwrite the previous diagnosis once the new one is
+                                // confirmed successful — a failed request must leave the last
+                                // good analysis in place instead of wiping it.
                                 const patch = { aiDiagnosis: data.analysis, aiDiagnosisAt: data.generatedAt, aiDiagnosisSignature: data.signature, aiDiagnosisConsistencyWarning: Boolean(data.consistencyWarning) };
                                 updateCase(patch);
+                                setIsRequestingNewDiagnosis(false);
                                 // Persist immediately instead of waiting on the generic debounced
                                 // autosave — this result costs a real API call, so it must survive
                                 // navigating away right after it lands.
@@ -1344,6 +1383,7 @@ export default function CaseWorkspace({ initialCases, userName }: { initialCases
                                 }
                               } catch (e) {
                                 showToast((e as Error).message, "error");
+                                setIsRequestingNewDiagnosis(false);
                               } finally {
                                 setIsAiDiagnosing(false);
                               }
@@ -1362,7 +1402,7 @@ export default function CaseWorkspace({ initialCases, userName }: { initialCases
                       </div>
                     )}
 
-                    {activeCase.aiDiagnosis && (
+                    {activeCase.aiDiagnosis && !isRequestingNewDiagnosis && (
                       <div>
                         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "8px", flexWrap: "wrap", gap: "6px" }}>
                           <p style={{ fontSize: "0.7rem", color: "var(--text-faint)" }}>
@@ -1402,7 +1442,7 @@ export default function CaseWorkspace({ initialCases, userName }: { initialCases
                           <button
                             className="btn-secondary"
                             style={{ padding: "5px 12px", fontSize: "0.73rem" }}
-                            onClick={() => { updateCase({ aiDiagnosis: "", aiDiagnosisAt: "", aiDiagnosisSignature: "", aiDiagnosisConsistencyWarning: false }); setWizardNotes(""); }}
+                            onClick={() => { setIsRequestingNewDiagnosis(true); setWizardNotes(""); }}
                           >
                             🔄 تحليل جديد
                           </button>

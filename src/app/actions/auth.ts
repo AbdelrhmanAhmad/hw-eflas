@@ -10,7 +10,7 @@ import { sendPasswordResetEmail } from "@/lib/email";
 import bcrypt from "bcryptjs";
 
 const LoginSchema = z.object({
-  email: z.email({ error: "الرجاء إدخال بريد إلكتروني صحيح" }).trim(),
+  email: z.email({ error: "الرجاء إدخال بريد إلكتروني صحيح" }).trim().toLowerCase(),
   password: z.string().min(1, { error: "كلمة المرور مطلوبة" }),
 });
 
@@ -90,7 +90,7 @@ export async function logout() {
 const RESET_TOKEN_DURATION_MS = 60 * 60 * 1000;
 
 const ForgotPasswordSchema = z.object({
-  email: z.email({ error: "الرجاء إدخال بريد إلكتروني صحيح" }).trim(),
+  email: z.email({ error: "الرجاء إدخال بريد إلكتروني صحيح" }).trim().toLowerCase(),
 });
 
 export interface ForgotPasswordFormState {
