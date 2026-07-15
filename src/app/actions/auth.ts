@@ -1,12 +1,12 @@
 "use server";
 
 import * as z from "zod";
-import { randomBytes, createHash } from "crypto";
+import { createHash } from "crypto";
 import { redirect } from "next/navigation";
-import { headers } from "next/headers";
 import { prisma } from "@/lib/db";
 import { createSession, deleteSession } from "@/lib/session";
 import { sendPasswordResetEmail } from "@/lib/email";
+import { createPasswordResetToken, getOrigin } from "@/lib/password-reset";
 import bcrypt from "bcryptjs";
 
 const LoginSchema = z.object({
@@ -99,13 +99,6 @@ export interface ForgotPasswordFormState {
   success?: boolean;
 }
 
-async function getOrigin() {
-  const h = await headers();
-  const proto = h.get("x-forwarded-proto") ?? "https";
-  const host = h.get("host");
-  return `${proto}://${host}`;
-}
-
 export async function requestPasswordReset(
   _state: ForgotPasswordFormState | undefined,
   formData: FormData,
@@ -124,17 +117,7 @@ export async function requestPasswordReset(
     return genericSuccess;
   }
 
-  const rawToken = randomBytes(32).toString("hex");
-  const tokenHash = createHash("sha256").update(rawToken).digest("hex");
-
-  await prisma.passwordResetToken.create({
-    data: {
-      userId: user.id,
-      tokenHash,
-      expiresAt: new Date(Date.now() + RESET_TOKEN_DURATION_MS),
-    },
-  });
-
+  const rawToken = await createPasswordResetToken(user.id, RESET_TOKEN_DURATION_MS);
   const origin = await getOrigin();
   const resetUrl = `${origin}/reset-password?token=${rawToken}`;
 

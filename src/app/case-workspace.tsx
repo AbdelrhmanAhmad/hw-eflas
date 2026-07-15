@@ -96,7 +96,8 @@ function ClientAccountCard({
     if (res?.error) { setError(res.error); return; }
     onChange(String(formData.get("email")));
     setFormOpen(false);
-    showToast("تم إنشاء حساب العميل بنجاح");
+    if (res?.warning) { showToast(res.warning, "error"); return; }
+    showToast("تم إنشاء الحساب وإرسال رابط تعيين كلمة المرور للعميل بالبريد");
   };
 
   const handleRevoke = async () => {
@@ -138,7 +139,7 @@ function ClientAccountCard({
             <input className="custom-input" name="name" placeholder="اسم ممثل العميل" required style={{ fontSize: "0.78rem" }} />
             <input className="custom-input" name="email" type="email" placeholder="البريد الإلكتروني" required style={{ fontSize: "0.78rem" }} />
           </div>
-          <input className="custom-input" name="password" type="password" placeholder="كلمة المرور الأولية (8 أحرف على الأقل)" required style={{ fontSize: "0.78rem" }} />
+          <p style={{ fontSize: "0.7rem", color: "var(--text-muted)" }}>سيصل للعميل بريد فيه رابط لتعيين كلمة مروره بنفسه — لن يُطلب منك تحديدها.</p>
           {error && <p style={{ color: "var(--red)", fontSize: "0.73rem" }}>{error}</p>}
           <div style={{ display: "flex", gap: "8px" }}>
             <button className="btn-primary" type="submit" disabled={pending} style={{ padding: "6px 14px", fontSize: "0.76rem" }}>{pending ? "جارٍ الإنشاء..." : "إنشاء الحساب"}</button>
