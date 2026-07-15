@@ -1,0 +1,166 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id                  String    @id @default(cuid())
+  email               String    @unique
+  passwordHash        String
+  name                String
+  role                String    @default("admin")
+  createdAt           DateTime  @default(now())
+  failedLoginAttempts Int       @default(0)
+  lockedUntil         DateTime?
+  cases               Case[]    @relation("CaseOwner")
+  clientCase          Case?     @relation("CaseClient")
+  resetTokens         PasswordResetToken[]
+}
+
+model PasswordResetToken {
+  id        String    @id @default(cuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([userId])
+}
+
+model Case {
+  id             String    @id
+  userId         String
+  user           User      @relation("CaseOwner", fields: [userId], references: [id], onDelete: Cascade)
+  clientUserId   String?   @unique
+  clientUser     User?     @relation("CaseClient", fields: [clientUserId], references: [id], onDelete: SetNull)
+  createdAt      String
+  lastModified   String
+  status         String
+  caseNumber     String?
+  submissionDate String?
+
+  debtorName           String
+  legalForm            String
+  crNumber             String
+  crCity               String
+  courtCity            String
+  representativeName   String
+  representativeTitle  String
+  representativeId     String
+  attorneyName         String
+  attorneyLicense      String
+
+  documentDate String
+  documentTime String
+  poaNumber    String
+  poaDate      String
+  poaCity      String
+
+  lawyerSignatureData         String @default("")
+  representativeSignatureData String @default("")
+
+  totalDebts  Float
+  totalAssets Float
+
+  isEstablishment                 String
+  isActive                        String
+  hasAssets                       String
+  assetsCoverExpenses             String
+  insolvencyStatus                String
+  financialStatementsAvailable    String
+  financialTransactionsAvailable  String
+  creditorsNotified               String
+  operatedTwelveMonths            String
+  previousSettlement              String
+
+  zatcaFileNumber String
+  zatcaChecklist  String
+  gosiFileNumber  String
+  gosiChecklist   String
+  hrChecklist     String
+
+  commerceCrCancellationRequested Boolean
+  samaNotified                    Boolean
+
+  timelineEvents String
+  trusteeName    String
+  hearingDates   String
+
+  aiDiagnosis          String @default("")
+  aiDiagnosisAt        String @default("")
+  aiDiagnosisSignature String  @default("")
+  aiDiagnosisConsistencyWarning Boolean @default(false)
+
+  creditors Creditor[]
+  assets    Asset[]
+  employees Employee[]
+  files     UploadedFile[]
+
+  @@index([userId])
+}
+
+model Creditor {
+  id               String
+  caseId           String
+  case             Case    @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  name             String
+  amount           Float
+  priority         String
+  type             String
+  date             String
+  contact          String?
+  pledgeType       String?
+  pledgeRegistered Boolean?
+
+  // Client generates ids per-case (e.g. "1", "2", ...), so uniqueness must be
+  // scoped to the parent case rather than global.
+  @@id([caseId, id])
+}
+
+model Asset {
+  id          String
+  caseId      String
+  case        Case   @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  name        String
+  value       Float
+  location    String
+  description String
+
+  @@id([caseId, id])
+}
+
+model Employee {
+  id          String
+  caseId      String
+  case        Case   @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  name        String
+  nationality String
+  iqama       String
+  salary      Float
+  joinDate    String
+  benefits    Float
+
+  @@id([caseId, id])
+}
+
+model UploadedFile {
+  id          String   @id @default(cuid())
+  caseId      String
+  case        Case     @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  name        String
+  type        String
+  size        String
+  status      String
+  storagePath String
+  mimeType    String
+  createdAt   DateTime @default(now())
+
+  @@index([caseId])
+}

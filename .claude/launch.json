@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "basatat",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["--prefix", "/Users/mohammad/development/basatat", "run", "dev"],
+      "port": 3000
+    }
+  ]
+}

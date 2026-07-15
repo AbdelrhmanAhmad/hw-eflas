@@ -1,0 +1,11 @@
+node_modules/
+.next/
+.env
+.env.local
+.env*.local
+*.tsbuildinfo
+prisma/dev.db
+uploads/
+tsconfig.tsbuildinfo
+.DS_Store
+.claude/settings.local.json
