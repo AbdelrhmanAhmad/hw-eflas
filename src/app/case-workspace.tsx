@@ -18,6 +18,13 @@ import { getRecommendation, getDeficiencies, buildDiagnosisSignature } from "@/l
 import { calcEosb } from "@/lib/eosb";
 import { renderAiDiagnosis } from "@/lib/render-ai-diagnosis";
 import { createClientAccountAction, revokeClientAccountAction, resetClientPasswordAction } from "@/app/actions/clients";
+import {
+  User, CircleCheckBig, Plus, Check, Scale, ArrowLeft, ArrowRight, ArrowUpRight,
+  AlertTriangle, Copy, ClipboardList, Trash2, RefreshCw, FileText, Sparkles, Ban,
+  Handshake, Mail, Send, Package, PenLine, ScrollText, BookOpen, Pin, Folder, Wallet,
+  HardHat, HelpCircle, Settings, Bot, Info, Download, LayoutDashboard, Stethoscope,
+  Calendar, Loader2, type LucideIcon,
+} from "lucide-react";
 
 interface Toast {
   id: string;
@@ -114,14 +121,14 @@ function ClientAccountCard({
   return (
     <div className="glass-panel" style={{ padding: "14px", border: "1px solid var(--card-border)" }}>
       <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "10px" }}>
-        <span style={{ fontSize: "1rem" }}>👤</span>
+        <User size={16} color="var(--text-muted)" />
         <p style={{ fontSize: "0.82rem", fontWeight: 700, color: "var(--text-body)" }}>حساب دخول العميل</p>
       </div>
 
       {!clientEmail && !formOpen && (
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "10px", flexWrap: "wrap" }}>
           <p style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>لا يوجد حساب دخول للعميل بعد — أنشئ له حساباً ليتابع ملفه ويرفع مستنداته بنفسه.</p>
-          <button className="btn-primary" style={{ padding: "7px 14px", fontSize: "0.78rem", flexShrink: 0 }} onClick={() => setFormOpen(true)}>+ إنشاء حساب</button>
+          <button className="btn-primary" style={{ padding: "7px 14px", fontSize: "0.78rem", flexShrink: 0 }} onClick={() => setFormOpen(true)}><Plus size={14} /> إنشاء حساب</button>
         </div>
       )}
 
@@ -143,7 +150,7 @@ function ClientAccountCard({
       {clientEmail && (
         <div>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "10px", flexWrap: "wrap" }}>
-            <p style={{ fontSize: "0.78rem", color: "var(--text-body)" }}>✅ مرتبط بحساب: <strong>{clientEmail}</strong></p>
+            <p style={{ fontSize: "0.78rem", color: "var(--text-body)", display: "flex", alignItems: "center", gap: "6px" }}><CircleCheckBig size={14} color="var(--green-600)" /> مرتبط بحساب: <strong>{clientEmail}</strong></p>
             <div style={{ display: "flex", gap: "6px" }}>
               <button className="btn-secondary" style={{ padding: "5px 12px", fontSize: "0.72rem" }} onClick={() => { setResetOpen(o => !o); setError(""); }}>إعادة تعيين كلمة المرور</button>
               <button className="btn-secondary" style={{ padding: "5px 12px", fontSize: "0.72rem", color: "var(--red)" }} disabled={pending} onClick={handleRevoke}>إلغاء الحساب</button>
@@ -709,21 +716,21 @@ export default function CaseWorkspace({ initialCases, userName }: { initialCases
               <button type="submit" className="btn-ghost" style={{ fontSize: "0.75rem" }}>تسجيل الخروج</button>
             </form>
             <button className="btn-primary" onClick={() => setNewCaseModal(true)}>
-              + ملف عميل جديد
+              <Plus size={16} /> ملف عميل جديد
             </button>
           </div>
         </div>
 
         {/* ── Stats ── */}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "14px", marginBottom: "32px" }}>
-          {[
-            { label: "إجمالي الملفات", value: cases.length, icon: "📁", accent: "var(--green-600)" },
-            { label: "قيد التجهيز", value: cases.filter(c => c.status === "preparing").length, icon: "⚙️", accent: "var(--gold)" },
-            { label: "مقدمة للمحكمة", value: cases.filter(c => c.status === "submitted").length, icon: "⚖️", accent: "var(--green-600)" },
-            { label: "منجزة / مغلقة", value: cases.filter(c => c.status === "closed" || c.status === "decided").length, icon: "✅", accent: "var(--text-muted)" },
-          ].map((stat, i) => (
+          {([
+            { label: "إجمالي الملفات", value: cases.length, icon: Folder, accent: "var(--green-600)" },
+            { label: "قيد التجهيز", value: cases.filter(c => c.status === "preparing").length, icon: Settings, accent: "var(--gold)" },
+            { label: "مقدمة للمحكمة", value: cases.filter(c => c.status === "submitted").length, icon: Scale, accent: "var(--green-600)" },
+            { label: "منجزة / مغلقة", value: cases.filter(c => c.status === "closed" || c.status === "decided").length, icon: CircleCheckBig, accent: "var(--text-muted)" },
+          ] as { label: string; value: number; icon: LucideIcon; accent: string }[]).map((stat, i) => (
             <div key={i} className="stat-card">
-              <div className="stat-icon">{stat.icon}</div>
+              <div className="stat-icon"><stat.icon size={18} color={stat.accent} /></div>
               <div className="stat-value" style={{ color: stat.accent }}>{stat.value}</div>
               <div className="stat-label">{stat.label}</div>
             </div>
@@ -771,7 +778,7 @@ export default function CaseWorkspace({ initialCases, userName }: { initialCases
                     className="btn-ghost"
                     onClick={e => { e.stopPropagation(); deleteCase(c.id); }}
                     style={{ fontSize: "0.72rem", color: "var(--text-muted)" }}
-                  >🗑 حذف</button>
+                  ><Trash2 size={13} /> حذف</button>
                 </div>
               </div>
             );
@@ -837,7 +844,7 @@ export default function CaseWorkspace({ initialCases, userName }: { initialCases
           onClick={() => setView("list")}
           style={{ justifyContent: "flex-start", width: "100%", marginBottom: "8px", fontSize: "0.8rem" }}
         >
-          ← جميع الملفات
+          <ArrowLeft size={14} /> جميع الملفات
         </button>
 
         <hr className="divider" style={{ marginBottom: "10px" }} />
@@ -845,18 +852,18 @@ export default function CaseWorkspace({ initialCases, userName }: { initialCases
         {/* Nav */}
         <nav className="sidebar-nav">
           {([
-            { id: "dashboard", icon: "▦",  label: "لوحة التحكم" },
-            { id: "wizard",    icon: "◎",  label: "مساعد التشخيص" },
-            { id: "timeline",  icon: "⊙",  label: "الجدول الزمني" },
-            { id: "documents", icon: "≡",  label: "الوثائق القانونية" },
-            { id: "kb",        icon: "❓",  label: "الدليل المعرفي" },
-          ] as { id: typeof activeTab; icon: string; label: string }[]).map(tab => (
+            { id: "dashboard", icon: LayoutDashboard, label: "لوحة التحكم" },
+            { id: "wizard",    icon: Stethoscope,      label: "مساعد التشخيص" },
+            { id: "timeline",  icon: Calendar,         label: "الجدول الزمني" },
+            { id: "documents", icon: FileText,         label: "الوثائق القانونية" },
+            { id: "kb",        icon: HelpCircle,       label: "الدليل المعرفي" },
+          ] as { id: typeof activeTab; icon: LucideIcon; label: string }[]).map(tab => (
             <button
               key={tab.id}
               className={`nav-item ${activeTab === tab.id ? "active" : ""}`}
               onClick={() => { setActiveTab(tab.id); if (tab.id === "wizard") setWizardStep(1); }}
             >
-              <span className="nav-icon" style={{ fontStyle: "normal" }}>{tab.icon}</span>
+              <span className="nav-icon" style={{ display: "inline-flex" }}><tab.icon size={16} /></span>
               <span>{tab.label}</span>
             </button>
           ))}
@@ -902,10 +909,10 @@ export default function CaseWorkspace({ initialCases, userName }: { initialCases
                 </span>
               )}
               {saveStatus === "saved" && (
-                <span style={{ fontSize: "0.7rem", color: "var(--green-600)", fontWeight: 600 }}>✓ تم الحفظ</span>
+                <span style={{ display: "flex", alignItems: "center", gap: "4px", fontSize: "0.7rem", color: "var(--green-600)", fontWeight: 600 }}><Check size={13} /> تم الحفظ</span>
               )}
               {saveStatus === "error" && (
-                <span style={{ fontSize: "0.7rem", color: "var(--red)", fontWeight: 600 }}>⚠ فشل الحفظ — سيُعاد المحاولة مع أي تعديل جديد</span>
+                <span style={{ display: "flex", alignItems: "center", gap: "4px", fontSize: "0.7rem", color: "var(--red)", fontWeight: 600 }}><AlertTriangle size={13} /> فشل الحفظ — سيُعاد المحاولة مع أي تعديل جديد</span>
               )}
             </div>
           </div>
@@ -934,7 +941,7 @@ export default function CaseWorkspace({ initialCases, userName }: { initialCases
             {/* Article 22 — Automatic Stay Banner */}
             {(activeCase.status === "submitted" || activeCase.status === "decided") && (
               <div style={{ background: "rgba(21,128,61,0.06)", border: "1px solid var(--green-border)", borderRadius: "var(--radius-md)", padding: "12px 16px", display: "flex", gap: "12px", alignItems: "flex-start" }}>
-                <span style={{ fontSize: "1.1rem", flexShrink: 0 }}>⚖️</span>
+                <Scale size={18} color="var(--green-600)" style={{ flexShrink: 0 }} />
                 <div>
                   <p style={{ fontSize: "0.82rem", fontWeight: 700, color: "var(--green-600)", marginBottom: "3px" }}>المادة 22 — الوقف التلقائي لجميع الدعاوى المدنية</p>
                   <p style={{ fontSize: "0.74rem", color: "var(--text-body)", lineHeight: 1.5 }}>
@@ -949,7 +956,7 @@ export default function CaseWorkspace({ initialCases, userName }: { initialCases
               {[
                 { label: "إجمالي الديون", value: `${totalDebts.toLocaleString()} ر.س`, sub: `${activeCase.creditors.length} دائن`, color: "var(--red)", bg: "var(--red-light)", border: "var(--red-border)" },
                 { label: "إجمالي الأصول", value: `${totalAssets.toLocaleString()} ر.س`, sub: `${activeCase.assets.length} بند`, color: "var(--green-600)", bg: "var(--green-50)", border: "var(--green-border)" },
-                { label: "عجز التصفية", value: `${Math.max(0, 150000 - totalAssets).toLocaleString()} ر.س`, sub: "المطلوب 150,000 ر.س", color: "var(--gold)", bg: "var(--gold-light)", border: "var(--gold-border)" },
+                { label: "عجز التصفية", value: `${Math.max(0, LIQUIDATION_COST_ESTIMATE - totalAssets).toLocaleString()} ر.س`, sub: `المطلوب ${LIQUIDATION_COST_ESTIMATE.toLocaleString()} ر.س`, color: "var(--gold)", bg: "var(--gold-light)", border: "var(--gold-border)" },
                 { label: "مستحقات العمالة", value: `${totalEosb.toLocaleString()} ر.س`, sub: `${activeCase.employees.length} موظف`, color: "var(--green-700)", bg: "var(--green-50)", border: "var(--green-border)" },
               ].map((item, i) => (
                 <div key={i} className="stat-card" style={{ background: item.bg, border: `1px solid ${item.border}` }}>
@@ -982,7 +989,7 @@ export default function CaseWorkspace({ initialCases, userName }: { initialCases
                 <div style={{ marginBottom: "10px", paddingBottom: "10px", borderBottom: "1px solid var(--border)" }}>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "6px" }}>
                     <p style={{ fontSize: "0.77rem", fontWeight: 700, color: "var(--text-heading)" }}>هيئة الزكاة والضريبة والجمارك (ZATCA)</p>
-                    <a href="https://zatca.gov.sa" target="_blank" rel="noreferrer" style={{ fontSize: "0.64rem", color: "var(--primary-green)", textDecoration: "none" }}>الموقع ↗</a>
+                    <a href="https://zatca.gov.sa" target="_blank" rel="noreferrer" style={{ display: "inline-flex", alignItems: "center", gap: "2px", fontSize: "0.64rem", color: "var(--primary-green)", textDecoration: "none" }}>الموقع <ArrowUpRight size={12} /></a>
                   </div>
                   <input className="custom-input" value={activeCase.zatcaFileNumber} onChange={e => updateCase({ zatcaFileNumber: e.target.value })} placeholder="رقم ملف ZATCA" style={{ fontSize: "0.75rem", padding: "5px 8px", marginBottom: "5px" }} />
                   {([
@@ -1002,7 +1009,7 @@ export default function CaseWorkspace({ initialCases, userName }: { initialCases
                 <div style={{ marginBottom: "10px", paddingBottom: "10px", borderBottom: "1px solid var(--border)" }}>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "6px" }}>
                     <p style={{ fontSize: "0.77rem", fontWeight: 700, color: "var(--text-heading)" }}>التأمينات الاجتماعية (GOSI)</p>
-                    <a href="https://gosi.gov.sa" target="_blank" rel="noreferrer" style={{ fontSize: "0.64rem", color: "var(--primary-green)", textDecoration: "none" }}>الموقع ↗</a>
+                    <a href="https://gosi.gov.sa" target="_blank" rel="noreferrer" style={{ display: "inline-flex", alignItems: "center", gap: "2px", fontSize: "0.64rem", color: "var(--primary-green)", textDecoration: "none" }}>الموقع <ArrowUpRight size={12} /></a>
                   </div>
                   <input className="custom-input" value={activeCase.gosiFileNumber} onChange={e => updateCase({ gosiFileNumber: e.target.value })} placeholder="رقم منشأة GOSI" style={{ fontSize: "0.75rem", padding: "5px 8px", marginBottom: "5px" }} />
                   {([
@@ -1048,8 +1055,8 @@ export default function CaseWorkspace({ initialCases, userName }: { initialCases
                   ))}
                 </div>
 
-                <a href="https://najiz.sa" target="_blank" rel="noreferrer" style={{ display: "block", marginTop: "10px", fontSize: "0.72rem", color: "var(--primary-green)", textDecoration: "none", fontWeight: 600, borderTop: "1px solid var(--border)", paddingTop: "8px" }}>
-                  📋 تقديم الطلب عبر منصة ناجز ↗
+                <a href="https://najiz.sa" target="_blank" rel="noreferrer" style={{ display: "flex", alignItems: "center", gap: "6px", marginTop: "10px", fontSize: "0.72rem", color: "var(--primary-green)", textDecoration: "none", fontWeight: 600, borderTop: "1px solid var(--border)", paddingTop: "8px" }}>
+                  <ClipboardList size={14} /> تقديم الطلب عبر منصة ناجز <ArrowUpRight size={12} />
                 </a>
               </div>
 
@@ -1069,7 +1076,7 @@ export default function CaseWorkspace({ initialCases, userName }: { initialCases
                   onClick={() => document.getElementById("file-upload-input")?.click()}
                 >
                   <div>
-                    <p style={{ fontSize: "1.5rem" }}>📄</p>
+                    <FileText size={26} color="var(--text-muted)" style={{ marginBottom: "4px" }} />
                     <p style={{ fontSize: "0.78rem", fontWeight: 600 }}>اضغط لرفع مستند</p>
                     <p style={{ fontSize: "0.67rem", color: "var(--text-muted)" }}>PDF, JPG, PNG</p>
                   </div>
@@ -1079,9 +1086,9 @@ export default function CaseWorkspace({ initialCases, userName }: { initialCases
                     {activeCase.uploadedFiles.map((f, i) => (
                       <div key={f.id ?? i} style={{ display: "flex", justifyContent: "space-between", background: "var(--bg-tertiary)", padding: "5px 8px", borderRadius: "6px", fontSize: "0.7rem" }}>
                         {f.id ? (
-                          <a href={`/api/files/${f.id}`} target="_blank" rel="noopener noreferrer" style={{ color: "var(--success)" }}>✅ {f.name}</a>
+                          <a href={`/api/files/${f.id}`} target="_blank" rel="noopener noreferrer" style={{ display: "flex", alignItems: "center", gap: "5px", color: "var(--success)" }}><CircleCheckBig size={13} /> {f.name}</a>
                         ) : (
-                          <span style={{ color: "var(--success)" }}>✅ {f.name}</span>
+                          <span style={{ display: "flex", alignItems: "center", gap: "5px", color: "var(--success)" }}><CircleCheckBig size={13} /> {f.name}</span>
                         )}
                         <span style={{ color: "var(--text-muted)" }}>{f.size}</span>
                       </div>
@@ -1095,14 +1102,15 @@ export default function CaseWorkspace({ initialCases, userName }: { initialCases
                 <h3 style={{ fontSize: "0.9rem", fontWeight: 700, marginBottom: "8px" }} className="gold-gradient-text">النواقص والتنبيهات</h3>
                 {deficiencies.length === 0 ? (
                   <div style={{ textAlign: "center", padding: "16px" }}>
-                    <p style={{ fontSize: "1.5rem" }}>✅</p>
+                    <CircleCheckBig size={26} color="var(--success)" style={{ marginBottom: "4px" }} />
                     <p style={{ fontSize: "0.8rem", fontWeight: 700, color: "var(--success)" }}>الملف مكتمل!</p>
                   </div>
                 ) : (
                   <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
                     {deficiencies.map(d => (
-                      <div key={d.id} className={`deficiency-pill ${d.type}`} style={{ display: "block", fontSize: "0.71rem", lineHeight: "1.4", padding: "6px 10px", whiteSpace: "normal" }}>
-                        {d.type === "critical" ? "⛔ " : "⚠️ "}{d.text}
+                      <div key={d.id} className={`deficiency-pill ${d.type}`} style={{ display: "flex", alignItems: "flex-start", gap: "6px", fontSize: "0.71rem", lineHeight: "1.4", padding: "6px 10px", whiteSpace: "normal" }}>
+                        {d.type === "critical" ? <Ban size={14} style={{ flexShrink: 0, marginTop: "1px" }} /> : <AlertTriangle size={14} style={{ flexShrink: 0, marginTop: "1px" }} />}
+                        <span>{d.text}</span>
                       </div>
                     ))}
                   </div>
@@ -1136,7 +1144,7 @@ export default function CaseWorkspace({ initialCases, userName }: { initialCases
                 { step: 10, label: "النتيجة" },
               ].map(s => (
                 <div key={s.step} className={`step-node ${wizardStep === s.step ? "active" : wizardStep > s.step ? "completed" : ""}`}>
-                  {wizardStep > s.step ? "✓" : s.step}
+                  {wizardStep > s.step ? <Check size={14} /> : s.step}
                   <span className="step-label" style={{ fontSize: "0.65rem", top: "36px" }}>{s.label}</span>
                 </div>
               ))}
@@ -1315,7 +1323,7 @@ export default function CaseWorkspace({ initialCases, userName }: { initialCases
 
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
                     <div className="glass-panel" style={{ padding: "12px" }}>
-                      <p style={{ fontSize: "0.73rem", fontWeight: 700, color: "var(--success)", marginBottom: "6px" }}>✅ ملخص الملف:</p>
+                      <p style={{ display: "flex", alignItems: "center", gap: "5px", fontSize: "0.73rem", fontWeight: 700, color: "var(--success)", marginBottom: "6px" }}><CircleCheckBig size={13} /> ملخص الملف:</p>
                       <ul style={{ fontSize: "0.7rem", color: "var(--text-secondary)", display: "flex", flexDirection: "column", gap: "3px", listStyle: "none" }}>
                         <li>الكيان: {activeCase.isEstablishment === "company" ? "شركة تجارية" : "مؤسسة فردية"}</li>
                         <li>النشاط: {activeCase.isActive === "no" ? "متوقف" : "مستمر"}</li>
@@ -1324,7 +1332,7 @@ export default function CaseWorkspace({ initialCases, userName }: { initialCases
                       </ul>
                     </div>
                     <div className="glass-panel" style={{ padding: "12px" }}>
-                      <p style={{ fontSize: "0.73rem", fontWeight: 700, color: "var(--error)", marginBottom: "6px" }}>⚠️ خطوات عاجلة:</p>
+                      <p style={{ display: "flex", alignItems: "center", gap: "5px", fontSize: "0.73rem", fontWeight: 700, color: "var(--error)", marginBottom: "6px" }}><AlertTriangle size={13} /> خطوات عاجلة:</p>
                       <ul style={{ fontSize: "0.7rem", color: "var(--text-secondary)", display: "flex", flexDirection: "column", gap: "3px", listStyle: "none" }}>
                         {activeCase.financialStatementsAvailable === "no" && <li>صياغة خطاب تعذر القوائم</li>}
                         {activeCase.isEstablishment === "company" && <li>استصدار قرار الشركاء</li>}
@@ -1337,7 +1345,7 @@ export default function CaseWorkspace({ initialCases, userName }: { initialCases
                   {/* AI Deep Analysis */}
                   <div className="glass-panel" style={{ padding: "14px", border: "1px solid var(--card-border)" }}>
                     <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "10px" }}>
-                      <span style={{ fontSize: "1rem" }}>🤖</span>
+                      <Bot size={17} color="var(--gold)" />
                       <p style={{ fontSize: "0.82rem", fontWeight: 700, color: "var(--text-body)" }}>تحليل Claude الذكي المتعمق</p>
                     </div>
 
@@ -1389,7 +1397,7 @@ export default function CaseWorkspace({ initialCases, userName }: { initialCases
                               }
                             }}
                           >
-                            ✨ ابدأ التحليل الذكي
+                            <Sparkles size={14} /> ابدأ التحليل الذكي
                           </button>
                         </div>
                       </div>
@@ -1409,15 +1417,16 @@ export default function CaseWorkspace({ initialCases, userName }: { initialCases
                             آخر تحليل: {activeCase.aiDiagnosisAt ? new Date(activeCase.aiDiagnosisAt).toLocaleString("ar-SA", { dateStyle: "long", timeStyle: "short" }) : "—"}
                           </p>
                           {activeCase.aiDiagnosisSignature && buildDiagnosisSignature(activeCase) !== activeCase.aiDiagnosisSignature && (
-                            <span style={{ fontSize: "0.7rem", fontWeight: 700, color: "var(--red)", background: "var(--red-light)", border: "1px solid var(--red-border)", borderRadius: "20px", padding: "2px 10px" }}>
-                              ⚠️ بيانات الملف تغيّرت منذ هذا التحليل — يُنصح بإعادة التحليل
+                            <span style={{ display: "inline-flex", alignItems: "center", gap: "5px", fontSize: "0.7rem", fontWeight: 700, color: "var(--red)", background: "var(--red-light)", border: "1px solid var(--red-border)", borderRadius: "20px", padding: "2px 10px" }}>
+                              <AlertTriangle size={12} /> بيانات الملف تغيّرت منذ هذا التحليل — يُنصح بإعادة التحليل
                             </span>
                           )}
                         </div>
                         {activeCase.aiDiagnosisConsistencyWarning && (
-                          <div style={{ background: "var(--red-light)", border: "1px solid var(--red-border)", borderRadius: "8px", padding: "8px 12px", marginBottom: "10px" }}>
+                          <div style={{ display: "flex", alignItems: "flex-start", gap: "8px", background: "var(--red-light)", border: "1px solid var(--red-border)", borderRadius: "8px", padding: "8px 12px", marginBottom: "10px" }}>
+                            <AlertTriangle size={15} color="var(--red)" style={{ flexShrink: 0, marginTop: "2px" }} />
                             <p style={{ fontSize: "0.73rem", fontWeight: 700, color: "var(--red)" }}>
-                              ⚠️ تنبيه آلي: النص أدناه لم يذكر صراحة المادة القانونية المتوقعة من التصنيف الأولي، ولم يوضّح سبب مخالفته أيضاً — راجع التحليل يدوياً بعناية قبل الاعتماد عليه.
+                              تنبيه آلي: النص أدناه لم يذكر صراحة المادة القانونية المتوقعة من التصنيف الأولي، ولم يوضّح سبب مخالفته أيضاً — راجع التحليل يدوياً بعناية قبل الاعتماد عليه.
                             </p>
                           </div>
                         )}
@@ -1437,14 +1446,14 @@ export default function CaseWorkspace({ initialCases, userName }: { initialCases
                               }
                             }}
                           >
-                            📋 نسخ النص
+                            <Copy size={13} /> نسخ النص
                           </button>
                           <button
                             className="btn-secondary"
                             style={{ padding: "5px 12px", fontSize: "0.73rem" }}
                             onClick={() => { setIsRequestingNewDiagnosis(true); setWizardNotes(""); }}
                           >
-                            🔄 تحليل جديد
+                            <RefreshCw size={13} /> تحليل جديد
                           </button>
                         </div>
                       </div>
@@ -1465,9 +1474,9 @@ export default function CaseWorkspace({ initialCases, userName }: { initialCases
             <div style={{ display: "flex", justifyContent: "space-between", borderTop: "1px solid var(--card-border)", paddingTop: "12px" }}>
               <button className="btn-secondary" onClick={() => setWizardStep(p => Math.max(1, p - 1))} disabled={wizardStep === 1} style={{ opacity: wizardStep === 1 ? 0.5 : 1, padding: "8px 16px", fontSize: "0.8rem" }}>السابق</button>
               {wizardStep < 10 ? (
-                <button className="btn-primary" onClick={() => setWizardStep(p => Math.min(10, p + 1))} style={{ padding: "8px 16px", fontSize: "0.8rem" }}>التالي →</button>
+                <button className="btn-primary" onClick={() => setWizardStep(p => Math.min(10, p + 1))} style={{ padding: "8px 16px", fontSize: "0.8rem" }}>التالي <ArrowRight size={14} /></button>
               ) : (
-                <button className="btn-primary" onClick={() => { setActiveTab("documents"); setActiveDocTab("claim"); }} style={{ padding: "8px 16px", fontSize: "0.8rem" }}>📝 صياغة الوثائق</button>
+                <button className="btn-primary" onClick={() => { setActiveTab("documents"); setActiveDocTab("claim"); }} style={{ padding: "8px 16px", fontSize: "0.8rem" }}><PenLine size={14} /> صياغة الوثائق</button>
               )}
             </div>
           </div>
@@ -1519,7 +1528,7 @@ export default function CaseWorkspace({ initialCases, userName }: { initialCases
                       )}
                       {/* Dot */}
                       <div style={{ width: "20px", height: "20px", borderRadius: "50%", background: event.done ? "var(--success)" : "#fff", border: `2px solid ${dotColor}`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, marginTop: "2px", zIndex: 1 }}>
-                        {event.done && <span style={{ fontSize: "0.6rem", color: "#fff" }}>✓</span>}
+                        {event.done && <Check size={11} color="#fff" />}
                       </div>
                       {/* Content */}
                       <div style={{ flex: 1, padding: "6px 0 16px 0" }}>
@@ -1532,11 +1541,11 @@ export default function CaseWorkspace({ initialCases, userName }: { initialCases
                             <span style={{ fontSize: "0.82rem", fontWeight: event.done ? 400 : 600, color: event.done ? "var(--text-muted)" : "var(--text-primary)", textDecoration: event.done ? "line-through" : "none" }}>{event.label}</span>
                           </label>
                           {daysLeft !== null && !event.done && (
-                            <span style={{ fontSize: "0.65rem", padding: "1px 7px", borderRadius: "10px", fontWeight: 700, background: isOverdue ? "rgba(83,25,13,0.1)" : isUrgent ? "rgba(247,178,34,0.12)" : "var(--bg-tertiary)", color: isOverdue ? "var(--error)" : isUrgent ? "var(--warning)" : "var(--text-muted)", border: `1px solid ${isOverdue ? "rgba(83,25,13,0.2)" : isUrgent ? "rgba(247,178,34,0.3)" : "var(--card-border)"}` }}>
-                              {isOverdue ? `متأخر ${Math.abs(daysLeft)} يوم ⚠️` : daysLeft === 0 ? "اليوم! 🔴" : `${daysLeft} يوم متبقي`}
+                            <span style={{ display: "inline-flex", alignItems: "center", gap: "4px", fontSize: "0.65rem", padding: "1px 7px", borderRadius: "10px", fontWeight: 700, background: isOverdue ? "rgba(83,25,13,0.1)" : isUrgent ? "rgba(247,178,34,0.12)" : "var(--bg-tertiary)", color: isOverdue ? "var(--error)" : isUrgent ? "var(--warning)" : "var(--text-muted)", border: `1px solid ${isOverdue ? "rgba(83,25,13,0.2)" : isUrgent ? "rgba(247,178,34,0.3)" : "var(--card-border)"}` }}>
+                              {isOverdue ? <><AlertTriangle size={11} /> متأخر {Math.abs(daysLeft)} يوم</> : daysLeft === 0 ? <><AlertTriangle size={11} /> اليوم!</> : `${daysLeft} يوم متبقي`}
                             </span>
                           )}
-                          {event.done && <span style={{ fontSize: "0.65rem", color: "var(--success)", fontWeight: 700 }}>✅ منجز</span>}
+                          {event.done && <span style={{ display: "inline-flex", alignItems: "center", gap: "4px", fontSize: "0.65rem", color: "var(--success)", fontWeight: 700 }}><CircleCheckBig size={12} /> منجز</span>}
                         </div>
                       </div>
                     </div>
@@ -1646,19 +1655,19 @@ export default function CaseWorkspace({ initialCases, userName }: { initialCases
                 {/* Doc tab switcher */}
                 <div style={{ display: "flex", gap: "6px", overflowX: "auto", paddingBottom: "4px", flexWrap: "wrap" }}>
                   {([
-                    { id: "claim",           icon: "⚖️",  label: "صحيفة الطلب" },
-                    { id: "resolution",      icon: "🤝",  label: "قرار الشركاء" },
-                    { id: "poa",             icon: "📜",  label: "الوكالة الشرعية" },
-                    { id: "financial_letter",icon: "📩",  label: "خطاب القوائم" },
-                    { id: "creditors",       icon: "✉️",  label: "خطاب الدائنين" },
-                    { id: "transactions",    icon: "🔄",  label: "بيان التصرفات" },
-                    { id: "debts",           icon: "💰",  label: `الديون (${activeCase.creditors.length})` },
-                    { id: "assets",          icon: "📦",  label: `الأصول (${activeCase.assets.length})` },
-                    { id: "employees",       icon: "👷",  label: `العمالة (${activeCase.employees.length})` },
-                  ] as { id: typeof activeDocTab; icon: string; label: string }[]).map(tab => (
+                    { id: "claim",           icon: Scale,      label: "صحيفة الطلب" },
+                    { id: "resolution",      icon: Handshake,  label: "قرار الشركاء" },
+                    { id: "poa",             icon: ScrollText, label: "الوكالة الشرعية" },
+                    { id: "financial_letter",icon: Mail,       label: "خطاب القوائم" },
+                    { id: "creditors",       icon: Send,       label: "خطاب الدائنين" },
+                    { id: "transactions",    icon: RefreshCw,  label: "بيان التصرفات" },
+                    { id: "debts",           icon: Wallet,     label: `الديون (${activeCase.creditors.length})` },
+                    { id: "assets",          icon: Package,    label: `الأصول (${activeCase.assets.length})` },
+                    { id: "employees",       icon: HardHat,    label: `العمالة (${activeCase.employees.length})` },
+                  ] as { id: typeof activeDocTab; icon: LucideIcon; label: string }[]).map(tab => (
                     <button key={tab.id} onClick={() => { setActiveDocTab(tab.id); setIsEditingDoc(false); }}
-                      style={{ background: activeDocTab === tab.id ? "var(--gold-light)" : "var(--bg-secondary)", border: `1px solid ${activeDocTab === tab.id ? "var(--gold)" : "var(--card-border)"}`, color: activeDocTab === tab.id ? "var(--gold)" : "var(--text-primary)", padding: "6px 10px", borderRadius: "7px", fontSize: "0.75rem", cursor: "pointer", whiteSpace: "nowrap", fontWeight: activeDocTab === tab.id ? 700 : 400 }}>
-                      {tab.icon} {tab.label}
+                      style={{ display: "inline-flex", alignItems: "center", gap: "5px", background: activeDocTab === tab.id ? "var(--gold-light)" : "var(--bg-secondary)", border: `1px solid ${activeDocTab === tab.id ? "var(--gold)" : "var(--card-border)"}`, color: activeDocTab === tab.id ? "var(--gold)" : "var(--text-primary)", padding: "6px 10px", borderRadius: "7px", fontSize: "0.75rem", cursor: "pointer", whiteSpace: "nowrap", fontWeight: activeDocTab === tab.id ? 700 : 400 }}>
+                      <tab.icon size={14} /> {tab.label}
                     </button>
                   ))}
                 </div>
@@ -1721,7 +1730,7 @@ export default function CaseWorkspace({ initialCases, userName }: { initialCases
                             {activeCase.attorneyName || "..............................."}
                           </div>
                           {nafathLawyerState === "verified" && (
-                            <div style={{ fontSize: "0.62rem", color: "#15803d", marginTop: "3px", fontWeight: 600 }}>✅ تم التحقق عبر نفاذ</div>
+                            <div style={{ display: "flex", alignItems: "center", gap: "4px", fontSize: "0.62rem", color: "#15803d", marginTop: "3px", fontWeight: 600 }}><CircleCheckBig size={11} /> تم التحقق عبر نفاذ</div>
                           )}
                         </div>
                         {/* Representative */}
@@ -1736,7 +1745,7 @@ export default function CaseWorkspace({ initialCases, userName }: { initialCases
                             {activeCase.representativeName || "..............................."}
                           </div>
                           {nafathRepState === "verified" && (
-                            <div style={{ fontSize: "0.62rem", color: "#15803d", marginTop: "3px", fontWeight: 600 }}>✅ تم التحقق عبر نفاذ</div>
+                            <div style={{ display: "flex", alignItems: "center", gap: "4px", fontSize: "0.62rem", color: "#15803d", marginTop: "3px", fontWeight: 600 }}><CircleCheckBig size={11} /> تم التحقق عبر نفاذ</div>
                           )}
                         </div>
                       </div>
@@ -1814,7 +1823,7 @@ export default function CaseWorkspace({ initialCases, userName }: { initialCases
                                 <input type="date" style={{ border: "none", background: "transparent", fontFamily: "inherit", fontSize: "0.76rem" }} value={cred.date} onChange={e => { const updated = activeCase.creditors.map(c => c.id === cred.id ? { ...c, date: e.target.value } : c); updateCase({ creditors: updated }); }} />
                               </td>
                               <td style={{ padding: "7px 6px", border: "1px solid #e2e8f0", textAlign: "center" }}>
-                                <button onClick={() => updateCase({ creditors: activeCase.creditors.filter(c => c.id !== cred.id) })} style={{ background: "transparent", border: "none", color: "red", cursor: "pointer" }}>❌</button>
+                                <button className="btn-icon danger" aria-label="حذف الدائن" onClick={() => updateCase({ creditors: activeCase.creditors.filter(c => c.id !== cred.id) })}><Trash2 size={14} /></button>
                               </td>
                             </tr>
                           ))}
@@ -1827,7 +1836,7 @@ export default function CaseWorkspace({ initialCases, userName }: { initialCases
                           </tr>
                         </tfoot>
                       </table>
-                      <button className="btn-primary" onClick={() => { const id = Date.now().toString(); updateCase({ creditors: [...activeCase.creditors, { id, name: "دائن جديد", amount: 0, priority: "p3_unsecured", type: "تجاري عادي", date: new Date().toISOString().substring(0, 10) }] }); }} style={{ marginTop: "14px", padding: "6px 14px", fontSize: "0.75rem" }}>➕ إضافة دائن</button>
+                      <button className="btn-primary" onClick={() => { const id = Date.now().toString(); updateCase({ creditors: [...activeCase.creditors, { id, name: "دائن جديد", amount: 0, priority: "p3_unsecured", type: "تجاري عادي", date: new Date().toISOString().substring(0, 10) }] }); }} style={{ marginTop: "14px", padding: "6px 14px", fontSize: "0.75rem" }}><Plus size={14} /> إضافة دائن</button>
                     </div>
                   )}
 
@@ -1858,13 +1867,13 @@ export default function CaseWorkspace({ initialCases, userName }: { initialCases
                               <td style={{ padding: "7px", border: "1px solid #e2e8f0" }}><input type="number" style={{ border: "none", background: "transparent", width: "90px", fontFamily: "inherit", fontSize: "0.78rem" }} value={a.value} onChange={e => updateCase({ assets: activeCase.assets.map(x => x.id === a.id ? { ...x, value: Number(e.target.value) } : x) })} /></td>
                               <td style={{ padding: "7px", border: "1px solid #e2e8f0" }}><input style={{ border: "none", background: "transparent", width: "100%", fontFamily: "inherit", fontSize: "0.78rem" }} value={a.location} onChange={e => updateCase({ assets: activeCase.assets.map(x => x.id === a.id ? { ...x, location: e.target.value } : x) })} /></td>
                               <td style={{ padding: "7px", border: "1px solid #e2e8f0" }}><input style={{ border: "none", background: "transparent", width: "100%", fontFamily: "inherit", fontSize: "0.78rem" }} value={a.description} onChange={e => updateCase({ assets: activeCase.assets.map(x => x.id === a.id ? { ...x, description: e.target.value } : x) })} /></td>
-                              <td style={{ padding: "7px", border: "1px solid #e2e8f0", textAlign: "center" }}><button onClick={() => updateCase({ assets: activeCase.assets.filter(x => x.id !== a.id) })} style={{ background: "transparent", border: "none", color: "red", cursor: "pointer" }}>❌</button></td>
+                              <td style={{ padding: "7px", border: "1px solid #e2e8f0", textAlign: "center" }}><button className="btn-icon danger" aria-label="حذف الأصل" onClick={() => updateCase({ assets: activeCase.assets.filter(x => x.id !== a.id) })}><Trash2 size={14} /></button></td>
                             </tr>
                           ))}
                         </tbody>
                         <tfoot><tr style={{ background: "#f8fafc", fontWeight: 700 }}><td colSpan={1} style={{ padding: "8px", border: "1px solid #e2e8f0" }}>الإجمالي</td><td style={{ padding: "8px", border: "1px solid #e2e8f0", color: "var(--success)" }}>{totalAssets.toLocaleString()} ر.س</td><td colSpan={3} /></tr></tfoot>
                       </table>
-                      <button className="btn-primary" onClick={() => updateCase({ assets: [...activeCase.assets, { id: Date.now().toString(), name: "أصل جديد", value: 0, location: activeCase.crCity, description: "" }] })} style={{ marginTop: "14px", padding: "6px 14px", fontSize: "0.75rem" }}>➕ إضافة أصل</button>
+                      <button className="btn-primary" onClick={() => updateCase({ assets: [...activeCase.assets, { id: Date.now().toString(), name: "أصل جديد", value: 0, location: activeCase.crCity, description: "" }] })} style={{ marginTop: "14px", padding: "6px 14px", fontSize: "0.75rem" }}><Plus size={14} /> إضافة أصل</button>
                     </div>
                   )}
 
@@ -1894,13 +1903,13 @@ export default function CaseWorkspace({ initialCases, userName }: { initialCases
                               <td style={{ padding: "7px 6px", border: "1px solid #e2e8f0" }}><input type="date" style={{ border: "none", background: "transparent", fontFamily: "inherit", fontSize: "0.74rem" }} value={emp.joinDate} onChange={e => updateCase({ employees: activeCase.employees.map(x => x.id === emp.id ? { ...x, joinDate: e.target.value } : x) })} /></td>
                               <td style={{ padding: "7px 6px", border: "1px solid #e2e8f0" }}><input type="number" style={{ border: "none", background: "transparent", width: "70px", fontFamily: "inherit", fontSize: "0.76rem" }} value={emp.salary} onChange={e => updateCase({ employees: activeCase.employees.map(x => x.id === emp.id ? { ...x, salary: Number(e.target.value) } : x) })} /></td>
                               <td style={{ padding: "7px 6px", border: "1px solid #e2e8f0", fontWeight: 700, color: "var(--primary-green)" }}>{emp.benefits.toLocaleString()} ر.س</td>
-                              <td style={{ padding: "7px 6px", border: "1px solid #e2e8f0", textAlign: "center" }}><button onClick={() => updateCase({ employees: activeCase.employees.filter(x => x.id !== emp.id) })} style={{ background: "transparent", border: "none", color: "red", cursor: "pointer" }}>❌</button></td>
+                              <td style={{ padding: "7px 6px", border: "1px solid #e2e8f0", textAlign: "center" }}><button className="btn-icon danger" aria-label="حذف الموظف" onClick={() => updateCase({ employees: activeCase.employees.filter(x => x.id !== emp.id) })}><Trash2 size={14} /></button></td>
                             </tr>
                           ))}
                         </tbody>
                         <tfoot><tr style={{ background: "#f8fafc", fontWeight: 700 }}><td colSpan={5} style={{ padding: "8px", border: "1px solid #e2e8f0", textAlign: "left" }}>إجمالي مستحقات نهاية الخدمة:</td><td style={{ padding: "8px", border: "1px solid #e2e8f0", color: "var(--primary-green)" }}>{totalEosb.toLocaleString()} ر.س</td><td /></tr></tfoot>
                       </table>
-                      <button className="btn-primary" onClick={() => updateCase({ employees: [...activeCase.employees, { id: Date.now().toString(), name: "موظف جديد", nationality: "سعودي", iqama: "", salary: 5000, joinDate: new Date().toISOString().substring(0, 10), benefits: 0 }] })} style={{ marginTop: "14px", padding: "6px 14px", fontSize: "0.75rem" }}>➕ إضافة موظف</button>
+                      <button className="btn-primary" onClick={() => updateCase({ employees: [...activeCase.employees, { id: Date.now().toString(), name: "موظف جديد", nationality: "سعودي", iqama: "", salary: 5000, joinDate: new Date().toISOString().substring(0, 10), benefits: 0 }] })} style={{ marginTop: "14px", padding: "6px 14px", fontSize: "0.75rem" }}><Plus size={14} /> إضافة موظف</button>
                     </div>
                   )}
                 </div>
@@ -1909,7 +1918,7 @@ export default function CaseWorkspace({ initialCases, userName }: { initialCases
                 <div style={{ display: "flex", gap: "8px", justifyContent: "flex-end", flexWrap: "wrap" }}>
                   {["claim", "resolution", "poa", "financial_letter", "creditors", "transactions"].includes(activeDocTab) && (
                     <button className="btn-secondary" onClick={() => setIsEditingDoc(!isEditingDoc)} style={{ fontSize: "0.78rem" }}>
-                      ✏️ {isEditingDoc ? "حفظ وعودة للمعاينة" : "تعديل النص"}
+                      <PenLine size={14} /> {isEditingDoc ? "حفظ وعودة للمعاينة" : "تعديل النص"}
                     </button>
                   )}
                   <button className="btn-secondary" onClick={() => {
@@ -1917,10 +1926,10 @@ export default function CaseWorkspace({ initialCases, userName }: { initialCases
                       getDocText(activeDocTab) || JSON.stringify({ creditors: activeCase.creditors, assets: activeCase.assets, employees: employeesWithEosb }, null, 2)
                     );
                     showToast("تم نسخ الوثيقة إلى الحافظة");
-                  }} style={{ fontSize: "0.78rem" }}>📋 نسخ</button>
+                  }} style={{ fontSize: "0.78rem" }}><Copy size={14} /> نسخ</button>
                   {["claim", "resolution", "poa", "financial_letter", "creditors", "transactions"].includes(activeDocTab) && (
                     <button className="btn-secondary" onClick={downloadDocx} style={{ fontSize: "0.78rem" }}>
-                      📄 تحميل Word
+                      <FileText size={14} /> تحميل Word
                     </button>
                   )}
                   <button
@@ -1930,7 +1939,7 @@ export default function CaseWorkspace({ initialCases, userName }: { initialCases
                     title={isEditingDoc ? "أنهِ وضع التعديل أولاً" : ""}
                     style={{ fontSize: "0.78rem", opacity: isEditingDoc ? 0.5 : 1 }}
                   >
-                    ⬇️ تحميل PDF
+                    <Download size={14} /> تحميل PDF
                   </button>
                 </div>
               </div>
@@ -1941,13 +1950,13 @@ export default function CaseWorkspace({ initialCases, userName }: { initialCases
                 {/* AI Assistant */}
                 <div className="glass-panel" style={{ padding: "16px" }}>
                   <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px" }}>
-                    <span style={{ fontSize: "1.2rem" }}>🤖</span>
+                    <Bot size={19} color="var(--gold)" />
                     <h4 style={{ fontSize: "0.9rem", fontWeight: 700 }} className="gold-gradient-text">مساعد الصياغة الذكي</h4>
                   </div>
                   <p style={{ fontSize: "0.72rem", color: "var(--text-secondary)", marginBottom: "10px" }}>اكتب فقرة مخصصة تريد إضافتها للوثيقة ودع الذكاء الاصطناعي ينسقها بأسلوب قانوني.</p>
                   <textarea value={aiPrompt} onChange={e => setAiPrompt(e.target.value)} placeholder="مثال: صياغة بند يوضح تأثير ارتفاع رسوم الشحن على تعثر الشركة..." className="custom-textarea" style={{ minHeight: "72px", fontSize: "0.78rem", marginBottom: "8px" }} />
                   <button className="btn-primary" style={{ width: "100%", fontSize: "0.82rem", padding: "8px" }} onClick={handleAiDrafting} disabled={isAiDrafting || !aiPrompt.trim()}>
-                    {isAiDrafting ? "⌛ جاري الصياغة..." : "✨ صياغة بالذكاء الاصطناعي"}
+                    {isAiDrafting ? <><Loader2 size={14} className="spin-icon" /> جاري الصياغة...</> : <><Sparkles size={14} /> صياغة بالذكاء الاصطناعي</>}
                   </button>
                   {aiDraftedText && (
                     <div className="glass-panel animate-fade-in" style={{ padding: "10px", marginTop: "12px", border: "1px solid var(--accent-gold)", background: "rgba(247,178,34,0.03)" }}>
@@ -1958,7 +1967,7 @@ export default function CaseWorkspace({ initialCases, userName }: { initialCases
                           setDocText(activeDocTab, getDocText(activeDocTab) + "\n\n" + aiDraftedText);
                           setAiDraftedText(""); setAiPrompt("");
                           showToast("تم إدراج النص في الوثيقة");
-                        }} style={{ marginTop: "8px", width: "100%", padding: "4px", fontSize: "0.73rem" }}>📥 إدراج في الوثيقة</button>
+                        }} style={{ marginTop: "8px", width: "100%", padding: "4px", fontSize: "0.73rem" }}><Download size={13} /> إدراج في الوثيقة</button>
                       )}
                     </div>
                   )}
@@ -2036,7 +2045,7 @@ export default function CaseWorkspace({ initialCases, userName }: { initialCases
                       {/* Step 3: Verified → show upload */}
                       {nafathLawyerState === "verified" && (
                         <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-                          <div style={{ fontSize: "0.68rem", color: "var(--success)", fontWeight: 600 }}>✅ تم التحقق عبر نفاذ — يمكنك رفع التوقيع</div>
+                          <div style={{ display: "flex", alignItems: "center", gap: "5px", fontSize: "0.68rem", color: "var(--success)", fontWeight: 600 }}><CircleCheckBig size={13} /> تم التحقق عبر نفاذ — يمكنك رفع التوقيع</div>
                           <input type="file" accept="image/*"
                             style={{ fontSize: "0.72rem", color: "var(--text-secondary)" }}
                             onChange={e => {
@@ -2058,7 +2067,7 @@ export default function CaseWorkspace({ initialCases, userName }: { initialCases
                             }}
                           />
                           {activeCase.lawyerSignatureData && (
-                            <div style={{ fontSize: "0.68rem", color: "var(--success)" }}>✅ تم رفع التوقيع</div>
+                            <div style={{ display: "flex", alignItems: "center", gap: "5px", fontSize: "0.68rem", color: "var(--success)" }}><CircleCheckBig size={13} /> تم رفع التوقيع</div>
                           )}
                         </div>
                       )}
@@ -2093,7 +2102,7 @@ export default function CaseWorkspace({ initialCases, userName }: { initialCases
                       {/* Step 3: Verified → show upload */}
                       {nafathRepState === "verified" && (
                         <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-                          <div style={{ fontSize: "0.68rem", color: "var(--success)", fontWeight: 600 }}>✅ تم التحقق عبر نفاذ — يمكنك رفع التوقيع</div>
+                          <div style={{ display: "flex", alignItems: "center", gap: "5px", fontSize: "0.68rem", color: "var(--success)", fontWeight: 600 }}><CircleCheckBig size={13} /> تم التحقق عبر نفاذ — يمكنك رفع التوقيع</div>
                           <input type="file" accept="image/*"
                             style={{ fontSize: "0.72rem", color: "var(--text-secondary)" }}
                             onChange={e => {
@@ -2115,7 +2124,7 @@ export default function CaseWorkspace({ initialCases, userName }: { initialCases
                             }}
                           />
                           {activeCase.representativeSignatureData && (
-                            <div style={{ fontSize: "0.68rem", color: "var(--success)" }}>✅ تم رفع التوقيع</div>
+                            <div style={{ display: "flex", alignItems: "center", gap: "5px", fontSize: "0.68rem", color: "var(--success)" }}><CircleCheckBig size={13} /> تم رفع التوقيع</div>
                           )}
                         </div>
                       )}
@@ -2139,7 +2148,7 @@ export default function CaseWorkspace({ initialCases, userName }: { initialCases
 
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px" }}>
               <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
-                <h4 style={{ fontSize: "1rem", fontWeight: 700, color: "var(--accent-gold)" }}>📌 متطلبات لجنة الإفلاس</h4>
+                <h4 style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "1rem", fontWeight: 700, color: "var(--accent-gold)" }}><Pin size={16} /> متطلبات لجنة الإفلاس</h4>
                 {[
                   { title: "المستند 1: صحيفة الطلب", text: "يجب أن يتضمن اسم المدين وسجله التجاري وطبيعة الكيان ومبررات التقديم مع وكالة شرعية سارية ورخصة المحاماة. تُقدَّم أمام المحكمة التجارية لمقر الشركة." },
                   { title: "المستند 2: بيان الديون", text: "يجب صياغته في جدول واضح يشمل: الاسم التجاري والعنوان والبريد الإلكتروني لكل دائن، قيمة الدين بدقة، تاريخ استحقاقه، ونوع الدين ومرتبته." },
@@ -2155,7 +2164,7 @@ export default function CaseWorkspace({ initialCases, userName }: { initialCases
               </div>
 
               <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
-                <h4 style={{ fontSize: "1rem", fontWeight: 700, color: "var(--accent-gold)" }}>📖 نصوص نظام الإفلاس</h4>
+                <h4 style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "1rem", fontWeight: 700, color: "var(--accent-gold)" }}><BookOpen size={16} /> نصوص نظام الإفلاس</h4>
                 {[
                   { article: "المادة 168 — نظام الإفلاس", text: "\"يهدف إجراء التصفية الإدارية إلى بيع أصول التفليسة التي لا يتوقع أن ينتج عن بيعها حصيلة تكفي لتغطية مصروفات إجراء التصفية أو إجراء التصفية لصغار المدينين، وذلك تحت إشراف لجنة الإفلاس...\"" },
                   { article: "المادة 170 — تقديم الطلب", text: "للمدين وللجهة المختصة التقدم بطلب افتتاح إجراء التصفية الإدارية إذا كان المدين مفلساً أو متعثراً، وكانت أصوله لا تكفي لتغطية مصروفات إجراء التصفية." },
@@ -2184,11 +2193,13 @@ export default function CaseWorkspace({ initialCases, userName }: { initialCases
     <div style={{ position: "fixed", bottom: "24px", left: "24px", zIndex: 9999, display: "flex", flexDirection: "column", gap: "8px", pointerEvents: "none" }}>
       {toasts.map(t => (
         <div key={t.id} style={{
+          display: "flex", alignItems: "center", gap: "8px",
           padding: "10px 16px", borderRadius: "8px", fontSize: "0.82rem", fontWeight: 600, color: "#fff",
           background: t.type === "success" ? "var(--green-600)" : t.type === "error" ? "var(--red)" : "var(--gold)",
           boxShadow: "0 4px 12px rgba(0,0,0,0.15)", animation: "slideInUp 0.25s ease forwards", maxWidth: "320px",
         }}>
-          {t.type === "success" ? "✅ " : t.type === "error" ? "⛔ " : "ℹ️ "}{t.message}
+          {t.type === "success" ? <CircleCheckBig size={16} /> : t.type === "error" ? <Ban size={16} /> : <Info size={16} />}
+          {t.message}
         </div>
       ))}
     </div>
@@ -2198,7 +2209,7 @@ export default function CaseWorkspace({ initialCases, userName }: { initialCases
       <div style={{ position: "fixed", inset: 0, background: "rgba(15,25,35,0.45)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 2000, backdropFilter: "blur(4px)" }}>
         <div className="card animate-fade-in" style={{ padding: "28px", width: "400px", display: "flex", flexDirection: "column", gap: "18px" }}>
           <div>
-            <p style={{ fontSize: "1.3rem", marginBottom: "8px" }}>⚠️</p>
+            <AlertTriangle size={26} color="var(--red)" style={{ marginBottom: "8px" }} />
             <p style={{ fontSize: "0.92rem", fontWeight: 600, color: "var(--text-heading)" }}>{confirmModal.message}</p>
           </div>
           <div style={{ display: "flex", gap: "10px", justifyContent: "flex-end" }}>
