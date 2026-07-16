@@ -144,7 +144,6 @@ const ResetPasswordSchema = z.object({
 export interface ResetPasswordFormState {
   errors?: { password?: string[] };
   message?: string;
-  success?: boolean;
 }
 
 export async function resetPassword(
@@ -180,5 +179,10 @@ export async function resetPassword(
     }),
   ]);
 
-  return { success: true };
+  // Log the browser in as the token's owner, replacing any session already
+  // present (e.g. the admin who is still logged in on the device used to
+  // set up the client's account) — otherwise "go to login" bounces back
+  // into whichever account was already authenticated instead of this one.
+  await createSession(resetToken.userId);
+  redirect("/");
 }

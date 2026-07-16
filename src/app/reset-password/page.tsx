@@ -2,7 +2,6 @@
 
 import { Suspense, useActionState } from "react";
 import { useSearchParams } from "next/navigation";
-import Link from "next/link";
 import { resetPassword } from "@/app/actions/auth";
 
 function ResetPasswordForm() {
@@ -12,15 +11,6 @@ function ResetPasswordForm() {
 
   if (!token) {
     return <p style={{ color: "var(--red)", fontSize: "0.85rem", textAlign: "center" }}>رابط غير صالح. يرجى طلب رابط استرجاع جديد.</p>;
-  }
-
-  if (state?.success) {
-    return (
-      <div style={{ display: "flex", flexDirection: "column", gap: "14px", alignItems: "center" }}>
-        <p style={{ color: "var(--text-primary)", fontSize: "0.85rem", textAlign: "center" }}>تم تغيير كلمة المرور بنجاح.</p>
-        <Link className="btn-primary" href="/login" style={{ textAlign: "center", textDecoration: "none" }}>الذهاب لتسجيل الدخول</Link>
-      </div>
-    );
   }
 
   return (
