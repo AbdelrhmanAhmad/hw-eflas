@@ -2,9 +2,21 @@ import "server-only";
 import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
 
-const secretKey = process.env.SESSION_SECRET;
-if (!secretKey) throw new Error("SESSION_SECRET environment variable is not set");
-const encodedKey = new TextEncoder().encode(secretKey);
+const DEV_SESSION_SECRET = "dev-session-secret-change-me";
+
+function getSessionSecret() {
+  const secret = process.env.SESSION_SECRET ?? DEV_SESSION_SECRET;
+
+  if (!process.env.SESSION_SECRET) {
+    console.warn("SESSION_SECRET missing; using a development-only fallback secret.");
+  }
+
+  return secret;
+}
+
+function getEncodedKey() {
+  return new TextEncoder().encode(getSessionSecret());
+}
 
 const SESSION_COOKIE = "iflastec_session";
 const SESSION_DURATION_MS = 7 * 24 * 60 * 60 * 1000;
@@ -19,13 +31,13 @@ export async function encrypt(payload: SessionPayload) {
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
     .setExpirationTime("7d")
-    .sign(encodedKey);
+    .sign(getEncodedKey());
 }
 
 export async function decrypt(token: string | undefined = ""): Promise<SessionPayload | null> {
   if (!token) return null;
   try {
-    const { payload } = await jwtVerify(token, encodedKey, { algorithms: ["HS256"] });
+    const { payload } = await jwtVerify(token, getEncodedKey(), { algorithms: ["HS256"] });
     return payload as SessionPayload;
   } catch {
     return null;
